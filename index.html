@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Orchestration System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- LANDING PAGE -->
+<div id="landing" class="landing">
+  <nav>
+    <div class="logo">TaskFlow</div>
+    <div class="nav-btns">
+      <button class="btn" onclick="openAuth(true)">Login</button>
+      <button class="btn btn-primary" onclick="openAuth(false)">Sign Up</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>Your Tasks, Perfectly Organized</h1>
+    <p>Manage tasks with intelligent sorting, priority levels, and smart organization features.</p>
+    <div class="hero-btns">
+      <button class="btn btn-light" onclick="openAuth(false)">Get Started</button>
+      <button class="btn" style="background:transparent;color:white;border:2px solid white" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Learn More</button>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <h2>Powerful Features</h2>
+    <div class="feature-grid">
+      <div class="card" onclick="openAlgo('merge')">
+        <div class="card-icon">⚡</div>
+        <h3>Merge Sort</h3>
+        <p>Sort tasks A-Z using divide and conquer algorithm.</p>
+      </div>
+      <div class="card" onclick="openAlgo('greedy')">
+        <div class="card-icon">🎯</div>
+        <h3>Greedy Sort</h3>
+        <p>Prioritize tasks by importance and due date.</p>
+      </div>
+      <div class="card" onclick="openAlgo('search')">
+        <div class="card-icon">🔍</div>
+        <h3>Linear Search</h3>
+        <p>Find any task instantly with search filter.</p>
+      </div>
+      <div class="card" onclick="openAlgo('lcs')">
+        <div class="card-icon">🎮</div>
+        <h3>LCS Algorithm</h3>
+        <p>Word match game using dynamic programming.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stats-grid">
+      <div><h3>10K+</h3><p>Users</p></div>
+      <div><h3>500K+</h3><p>Tasks Done</p></div>
+      <div><h3>99%</h3><p>Uptime</p></div>
+    </div>
+  </section>
+
+  <footer><p>2025 TaskFlow</p></footer>
+</div>
+
+<!-- APP (After Login) -->
+<div id="app" class="app">
+  <div class="app-overlay">
+    <div class="app-box">
+      <h1 class="app-title">Task Manager</h1>
+      <div class="welcome">Welcome, <span id="userName"></span>!</div>
+      
+      <div class="stat-row">
+        <div class="stat-box">Total: <span id="total">0</span></div>
+        <div class="stat-box">Done: <span id="done">0</span></div>
+        <div class="stat-box">Pending: <span id="pending">0</span></div>
+      </div>
+      
+      <input type="text" id="search" placeholder="Search tasks..." oninput="searchTasks()">
+      <button class="task-btn" onclick="openTask()">Add New Task</button>
+      <button class="task-btn green" onclick="document.getElementById('sortMenu').classList.toggle('show')">Sort Tasks</button>
+      
+      <div id="sortMenu" class="sort-menu">
+        <button class="task-btn" onclick="mergeSortTasks()">Merge Sort (A-Z)</button>
+        <button class="task-btn" onclick="greedySort()">Greedy (Priority)</button>
+      </div>
+      
+      <ul id="taskList" class="task-list"></ul>
+      
+      <button class="task-btn orange" onclick="toggleGame()">Play Word Game (LCS)</button>
+      <div id="gameBox" class="game-box">
+        <div class="game-title">Word Match Game</div>
+        <p style="text-align:center;font-size:12px;color:#666;margin-bottom:10px">Find longest common sequence!</p>
+        <input type="text" id="w1" placeholder="First word">
+        <input type="text" id="w2" placeholder="Second word">
+        <button class="task-btn" onclick="findLCS()">Find Match</button>
+        <div id="result" class="result" style="display:none">
+          <strong>Result: </strong><span class="lcs-out" id="lcsOut"></span>
+          <div id="lcsLen" style="font-size:12px;color:#666;margin-top:5px"></div>
+        </div>
+      </div>
+      
+      <button class="task-btn red" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="modal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="modal-box">
+    <span class="close" onclick="document.getElementById('authModal').classList.remove('active')">x</span>
+    <h2 id="authTitle">Sign Up</h2>
+    <input type="text" id="name" placeholder="Full name">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="pass" placeholder="Password">
+    <button class="btn btn-primary" style="width:100%" onclick="handleAuth()">Sign Up</button>
+    <div class="switch">
+      <span id="switchText">Have account?</span> <button onclick="toggleAuthMode()">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- TASK MODAL -->
+<div id="taskModal" class="modal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="modal-box">
+    <span class="close" onclick="document.getElementById('taskModal').classList.remove('active')">x</span>
+    <h2 id="taskTitle">Add Task</h2>
+    <input type="text" id="tName" placeholder="Task name">
+    <input type="text" id="tDetails" placeholder="Details">
+    <input type="date" id="tDate">
+    <input type="time" id="tTime">
+    <select id="tPriority">
+      <option value="">Select Priority</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <button class="btn btn-primary" style="width:100%" id="taskBtn" onclick="saveTask()">Add</button>
+  </div>
+</div>
+
+<!-- ALGORITHM PANEL -->
+<div id="algoModal" class="algo-modal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="algo-panel">
+    <div class="algo-header">
+      <h2 id="algoTitle">Algorithm</h2>
+      <button class="algo-close" onclick="document.getElementById('algoModal').classList.remove('active')">x</button>
+    </div>
+    <div id="algoContent"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
